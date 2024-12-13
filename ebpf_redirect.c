@@ -34,7 +34,15 @@ int redirect_base_dst_mac(struct __sk_buff *skb) {
         return TC_ACT_OK;
     }
 
-    return bpf_redirect(57, 0); // 57: trunk ifindex
+    // 21: trunk ifindex
+    // 22: tap ifindex
+    // 185: eth ifindex
+    // return bpf_clone_redirect(skb, 22, BPF_F_INGRESS);
+    if (ether->h_dest[0] == 238 || ether->h_dest[0] == 255) { // ee: or ff:
+        return bpf_redirect(185, 0);
+    }
+
+    return TC_ACT_OK;
 }
 
 char __license[] SEC("license") = "Dual MIT/GPL";
